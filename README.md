@@ -23,7 +23,7 @@ Nagios HTTP/HTTPS check via wget (with/without Proxy).
     	-P PROXY	proxy access (hostname:port)
     	-w WARNING	warning threshold in milliseconds (default: 500)
     	-c CRITICAL	critical threshold in milliseconds (default: 2000)
-   	-n TRIES	number of times to try (default: 1)
+    	-n TRIES	number of times to try (default: 1)
     	-t TIMEOUT	amount of time to wait in seconds (default: 10)
 
 ##Examples:##
