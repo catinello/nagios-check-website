@@ -22,13 +22,26 @@ Nagios HTTP/HTTPS check via wget (with/without Proxy).
     	-s 		use SSL via HTTPS (default: 443)
     	-P PROXY	proxy access (hostname:port)
     	-w WARNING	warning threshold in milliseconds (default: 500)
-   	-c CRITICAL	critical threshold in milliseconds (default: 2000)
-    	-n TRIES	number of times to try (default: 1)
+    	-c CRITICAL	critical threshold in milliseconds (default: 2000)
+   	-n TRIES	number of times to try (default: 1)
     	-t TIMEOUT	amount of time to wait in seconds (default: 10)
 
 ##Examples:##
 
+Check with no options.
+
+    $ ./check_website www.google.com
+    HTTP OK: 174ms - http://www.google.com/
+
+Check with fake agent results into a warning because 740ms is above the default value of 500.
+
     $ ./check_website -f www.amazon.com
+    HTTP WARNING: 740ms - http://www.amazon.com/
+
+Check on a non default port with a fixed url expecting a ssl connection via proxy. 
+
+    $ ./check_website -p 8080 -u /index.html -s -P 192.168.27.111:3128 -c 4000 -w 1500 www.myweb.com
+    HTTPS OK: 274ms - https://www.myweb.com:8080/index.html
 
 ##Return Values:##
 
