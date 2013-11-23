@@ -34,9 +34,9 @@ function usage() {
 	host to check (dns/ip)
   [OPTIONS]:
 	-p PORT		port to check (default: 80)
+	-u URL		url path (default: /)
 	-f		use fake agent (windows xp/firefox 23)
 	-s 		use SSL via HTTPS (default: 443)
-	-u URL		url path (default: /)
 	-P PROXY	proxy access (hostname:port)
 	-w WARNING	warning threshold in milliseconds (default: 500)
 	-c CRITICAL	critical threshold in milliseconds (default: 2000)
@@ -154,7 +154,11 @@ else
 	#execute with fake user agent and capture execution time and return value of wget
 	start=$(echo $(($(date +%s%N)/1000000)))
 	$wget -t $times --timeout $timeout --delete-after -q -e $proxy_cmd $url \
-	--header="User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:23.0) Gecko/20100101 Firefox/23.0" --header="Accept: image/png,image/*;q=0.8,*/*;q=0.5" --header="Accept-Language: de-DE,de;q=0.5" --header="Accept-Encoding: gzip, deflate" --header="Referer: http://www.google.de"
+	--header="User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:23.0) Gecko/20100101 Firefox/23.0" \
+	--header="Accept: image/png,image/*;q=0.8,*/*;q=0.5" \
+	--header="Accept-Language: de-DE,de;q=0.5" \
+	--header="Accept-Encoding: gzip, deflate" \
+	--header="Referer: http://www.google.de"
 	status=$?
 	end=$(echo $(($(date +%s%N)/1000000)))
 fi
