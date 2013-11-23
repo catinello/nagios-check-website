@@ -7,6 +7,7 @@
 #variables
 wget=$(which wget)
 ssl=""
+fake=""
 host=""
 port=""
 proxy=""
@@ -33,6 +34,7 @@ function usage() {
 	host to check (dns/ip)
   [OPTIONS]:
 	-p PORT		port to check (default: 80)
+	-f		use fake agent (windows xp/firefox 23)
 	-s 		use SSL via HTTPS (default: 443)
 	-u URL		url path (default: /)
 	-P PROXY	proxy access (hostname:port)
@@ -66,7 +68,7 @@ function getStatus() {
 
 #main
 #get options
-while getopts "w:c:p:su:P:n:t:" opt; do
+while getopts "w:c:p:sfu:P:n:t:" opt; do
     case $opt in
 	w)
             warning=$OPTARG
@@ -80,6 +82,9 @@ while getopts "w:c:p:su:P:n:t:" opt; do
         s)
             ssl=1
             ;;
+	f)
+	    fake=1
+	    ;;
         u)
             url=$OPTARG
             ;;
@@ -138,11 +143,21 @@ if [ -z "$wget" ]; then
 	exit 3
 fi	
 
-#execute and capture execution time and return value of wget
-start=$(echo $(($(date +%s%N)/1000000)))
-$wget -t $times --timeout $timeout --delete-after -q -e $proxy_cmd $url --header="User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:23.0) Gecko/20100101 Firefox/23.0" --header="Accept: image/png,image/*;q=0.8,*/*;q=0.5" --header="Accept-Language: de-DE,de;q=0.5" --header="Accept-Encoding: gzip, deflate" --header="Referer: http://www.google.de"
-status=$?
-end=$(echo $(($(date +%s%N)/1000000)))
+#use fake user agent
+if [ -z "$fake" ]; then
+	#execute and capture execution time and return value of wget
+	start=$(echo $(($(date +%s%N)/1000000)))
+	$wget -t $times --timeout $timeout --delete-after -q -e $proxy_cmd $url
+	status=$?
+	end=$(echo $(($(date +%s%N)/1000000)))
+else
+	#execute with fake user agent and capture execution time and return value of wget
+	start=$(echo $(($(date +%s%N)/1000000)))
+	$wget -t $times --timeout $timeout --delete-after -q -e $proxy_cmd $url \
+	--header="User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:23.0) Gecko/20100101 Firefox/23.0" --header="Accept: image/png,image/*;q=0.8,*/*;q=0.5" --header="Accept-Language: de-DE,de;q=0.5" --header="Accept-Encoding: gzip, deflate" --header="Referer: http://www.google.de"
+	status=$?
+	end=$(echo $(($(date +%s%N)/1000000)))
+fi
 
 #decide output and return code
 if [ $status -eq 0 ] ; then
@@ -150,6 +165,6 @@ if [ $status -eq 0 ] ; then
 	getStatus $((end - start))
 	exit $retcode
 else
-	echo "${header} UNKNOWN: $((end - start))ms - ${url}"
+	echo "${header} UNKNOWN: N/A - ${url}"
 	exit 3
 fi
