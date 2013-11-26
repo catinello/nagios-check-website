@@ -19,7 +19,7 @@ Nagios HTTP/HTTPS check via wget (with/without Proxy).
     	-p PORT		port to check (default: 80)
     	-u URL		url path (default: /)
     	-f		use fake agent (windows xp/firefox 23)
-    	-s 		use SSL via HTTPS (default: 443)
+    	-s		use SSL via HTTPS (default: 443)
     	-P PROXY	proxy access (hostname:port)
     	-w WARNING	warning threshold in milliseconds (default: 500)
     	-c CRITICAL	critical threshold in milliseconds (default: 2000)
