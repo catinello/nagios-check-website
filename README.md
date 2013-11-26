@@ -18,7 +18,7 @@ Nagios HTTP/HTTPS check via wget (with/without Proxy).
       [OPTIONS]:
     	-p PORT		port to check (default: 80)
     	-u URL		url path (default: /)
-    	-f		use fake agent (windows xp/firefox 23)
+    	-f		use fake agent (windows xp/firefox 25)
     	-s		use SSL via HTTPS (default: 443)
     	-P PROXY	proxy access (hostname:port)
     	-w WARNING	warning threshold in milliseconds (default: 500)
@@ -31,17 +31,17 @@ Nagios HTTP/HTTPS check via wget (with/without Proxy).
 Check with no options.
 
     $ ./check_website www.google.com
-    HTTP OK: 174ms - http://www.google.com/
+    HTTP OK: 174ms - http://www.google.com/|time=174ms;500;2000;0;
 
 Check with fake agent results into a warning because 740ms is above the default value of 500.
 
     $ ./check_website -f www.amazon.com
-    HTTP WARNING: 740ms - http://www.amazon.com/
+    HTTP WARNING: 740ms - http://www.amazon.com/|time=740ms;500;2000;0;
 
 Check on a non default port with a fixed url expecting a ssl connection via proxy. 
 
     $ ./check_website -p 8080 -u /index.html -s -P 192.168.27.111:3128 -c 4000 -w 1500 www.myweb.com
-    HTTPS OK: 274ms - https://www.myweb.com:8080/index.html
+    HTTPS OK: 274ms - https://www.myweb.com:8080/index.html|time=274ms;500;2000;0;
 
 ##Return Values:##
 
