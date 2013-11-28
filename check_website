@@ -5,6 +5,7 @@
 # Description: Nagios HTTP/HTTPS check via wget (with/without Proxy)
 
 #variables
+version=0.1
 wget=$(which wget)
 ssl=""
 fake=""
@@ -27,6 +28,11 @@ function getProxy() {
 	fi
 }
 
+
+function version() {
+	echo "  Version: ${version} - License: MIT"
+}
+
 #usage info
 function usage() {
 	echo '''Usage: check_website [OPTIONS] {HOSTNAME}
@@ -42,6 +48,7 @@ function usage() {
 	-c CRITICAL	critical threshold in milliseconds (default: 2000)
 	-n TRIES	number of times to try (default: 1)
 	-t TIMEOUT	amount of time to wait in seconds (default: 10)'''
+	version
 }
 
 #check which threshold was reached
@@ -114,7 +121,7 @@ if [ -z "$host" ]; then
 	exit 3
 fi
 
-#set proxy from environment if no proxy option is given
+#set proxy from environment if available and no proxy option is given
 if [ -z "$proxy" ]; then
 	proxy="$(getProxy ssl)"
 fi
@@ -137,33 +144,33 @@ else
     url="${url_prefix}${host}:${port}${url}"
 fi
 
+#check for wget
 if [ -z "$wget" ]; then
 	echo "Error: wget is missing"
 	usage
 	exit 3
 fi	
 
-#use fake user agent
+#check fake user agent
 if [ -z "$fake" ]; then
-	#execute and capture execution time and return value of wget
+	#execute and capture execution time and return status of wget
 	start=$(echo $(($(date +%s%N)/1000000)))
 	$wget -t $times --timeout $timeout --delete-after -q -e $proxy_cmd $url
 	status=$?
 	end=$(echo $(($(date +%s%N)/1000000)))
 else
-	#execute with fake user agent and capture execution time and return value of wget
+	#execute with fake user agent and capture execution time and return status of wget
 	start=$(echo $(($(date +%s%N)/1000000)))
 	$wget -t $times --timeout $timeout --delete-after -q -e $proxy_cmd $url \
 	--header="User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:25.0) Gecko/20100101 Firefox/25.0" \
 	--header="Accept: image/png,image/*;q=0.8,*/*;q=0.5" \
 	--header="Accept-Language: de-DE,de;q=0.5" \
 	--header="Accept-Encoding: gzip, deflate" 
-	#--header="Referer: http://www.google.de"
 	status=$?
 	end=$(echo $(($(date +%s%N)/1000000)))
 fi
 
-#decide output and return code
+#decide output by return code
 if [ $status -eq 0 ] ; then
 	echo "${header} $(checkTime $((end - start))): $((end - start))ms - ${url}|time=$((end - start))ms;${warning};${critical};0;"
 	getStatus $((end - start))

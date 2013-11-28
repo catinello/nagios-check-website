@@ -8,7 +8,7 @@ Nagios HTTP/HTTPS check via wget (with/without Proxy).
 
     # wget https://raw.github.com/catinello/nagios-check-website/master/check_website
     # chmod +x check_website
-    # cp check_website /#to#/#your#/nagios/libexec/
+    # mv check_website /#to#/#your#/nagios/libexec/
 
 ##Usage:##
 
@@ -41,7 +41,7 @@ Check with fake agent results into a warning because 740ms is above the default 
 Check on a non default port with a fixed url expecting a ssl connection via proxy. 
 
     $ ./check_website -p 8080 -u /index.html -s -P 192.168.27.111:3128 -c 4000 -w 1500 www.myweb.com
-    HTTPS OK: 274ms - https://www.myweb.com:8080/index.html|time=274ms;500;2000;0;
+    HTTPS OK: 274ms - https://www.myweb.com:8080/index.html|time=274ms;1500;4000;0;
 
 ##Return Values:##
 
