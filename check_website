@@ -155,13 +155,13 @@ fi
 if [ -z "$fake" ]; then
 	#execute and capture execution time and return status of wget
 	start=$(echo $(($(date +%s%N)/1000000)))
-	$wget --no-check-certificate -t $times --timeout $timeout --delete-after -q -e $proxy_cmd $url
+	$wget --no-check-certificate -t $times --timeout $timeout -O /dev/null -q -e $proxy_cmd $url
 	status=$?
 	end=$(echo $(($(date +%s%N)/1000000)))
 else
 	#execute with fake user agent and capture execution time and return status of wget
 	start=$(echo $(($(date +%s%N)/1000000)))
-	$wget --no-check-certificate -t $times --timeout $timeout --delete-after -q -e $proxy_cmd $url \
+	$wget --no-check-certificate -t $times --timeout $timeout -O /dev/null -q -e $proxy_cmd $url \
 	--header="User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:25.0) Gecko/20100101 Firefox/25.0" \
 	--header="Accept: image/png,image/*;q=0.8,*/*;q=0.5" \
 	--header="Accept-Language: de-DE,de;q=0.5" \
