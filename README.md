@@ -25,6 +25,7 @@ Nagios HTTP/HTTPS check via wget (with/without Proxy).
     	-c CRITICAL	critical threshold in milliseconds (default: 2000)
     	-n TRIES	number of times to try (default: 1)
     	-t TIMEOUT	amount of time to wait in seconds (default: 10)
+		-C CERTIFICATE client certificate stored in file location (PEM AND DER file types allowed)
 
 ##Examples:##
 
@@ -42,6 +43,11 @@ Check on a non default port with a fixed url expecting a ssl connection via prox
 
     $ ./check_website -p 8080 -u /index.html -s -P 192.168.27.111:3128 -c 4000 -w 1500 www.myweb.com
     HTTPS OK: 274ms - https://www.myweb.com:8080/index.html|time=274ms;1500;4000;0;
+	
+Check through proxy passing client certificate for authentication.
+
+	./check_website -P squid.example.com:3128 -u /ping -s -w 2000 -c 5000 -C /root/certs/client_cert.pem www.example.com
+	HTTPS OK: 412ms - https://www.example.com/ping|time=412ms;2000;5000;0;
 
 ##Return Values:##
 
