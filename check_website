@@ -5,7 +5,7 @@
 # Description: Nagios HTTP/HTTPS check via wget (with/without Proxy)
 
 #variables
-version=0.1
+version=0.2
 wget=$(which wget)
 ssl=""
 fake=""
@@ -154,7 +154,7 @@ if [ -z "$wget" ]; then
 	echo "Error: wget is missing"
 	usage
 	exit 3
-fi	
+fi
 
 #check fake user agent
 if [ -z "$fake" ] && [ -z "$client_certificate" ]; then
@@ -176,7 +176,7 @@ elif [ -n "$fake" ] && [ -n "$client_certificate" ]; then
 	--header="User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:25.0) Gecko/20100101 Firefox/25.0" \
 	--header="Accept: image/png,image/*;q=0.8,*/*;q=0.5" \
 	--header="Accept-Language: en-us,en;q=0.5" \
-	--header="Accept-Encoding: gzip, deflate" 
+	--header="Accept-Encoding: gzip, deflate"
 	status=$?
 	end=$(echo $(($(date +%s%N)/1000000)))
 else
@@ -186,7 +186,7 @@ else
 	--header="User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:25.0) Gecko/20100101 Firefox/25.0" \
 	--header="Accept: image/png,image/*;q=0.8,*/*;q=0.5" \
 	--header="Accept-Language: en-us,en;q=0.5" \
-	--header="Accept-Encoding: gzip, deflate" 
+	--header="Accept-Encoding: gzip, deflate"
 	status=$?
 	end=$(echo $(($(date +%s%N)/1000000)))
 fi
