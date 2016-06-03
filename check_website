@@ -17,6 +17,7 @@ times=1
 timeout=10
 warning=500
 critical=2000
+certificate=""
 
 #functions
 #set system proxy from environment
@@ -47,7 +48,8 @@ function usage() {
 	-w WARNING	warning threshold in milliseconds (default: 500)
 	-c CRITICAL	critical threshold in milliseconds (default: 2000)
 	-n TRIES	number of times to try (default: 1)
-	-t TIMEOUT	amount of time to wait in seconds (default: 10)'''
+	-t TIMEOUT	amount of time to wait in seconds (default: 10)
+	-C CERTIFICATE client certificate stored in file location (PEM AND DER file types allowed)'''
 	version
 }
 
@@ -75,7 +77,7 @@ function getStatus() {
 
 #main
 #get options
-while getopts "w:c:p:sfu:P:n:t:" opt; do
+while getopts "w:c:p:sfu:P:n:t:C:" opt; do
     case $opt in
 	w)
             warning=$OPTARG
@@ -104,6 +106,9 @@ while getopts "w:c:p:sfu:P:n:t:" opt; do
         t)
             timeout=$OPTARG
             ;;
+	C)
+	    client_certificate=$OPTARG
+	    ;;
         *)
 	    usage
             exit 3
@@ -152,19 +157,35 @@ if [ -z "$wget" ]; then
 fi	
 
 #check fake user agent
-if [ -z "$fake" ]; then
+if [ -z "$fake" ] && [ -z "$client_certificate" ]; then
 	#execute and capture execution time and return status of wget
 	start=$(echo $(($(date +%s%N)/1000000)))
-	$wget --no-check-certificate -t $times --timeout $timeout -O /dev/null -q -e $proxy_cmd $url
+	$wget -t $times --timeout $timeout -O /dev/null -q -e $proxy_cmd $url
+	status=$?
+	end=$(echo $(($(date +%s%N)/1000000)))
+elif [ -z "$fake" ] && [ -n "$client_certificate" ]; then
+	#execute and capture execution time and return status of wget with client certificate
+	start=$(echo $(($(date +%s%N)/1000000)))
+	$wget -t $times --timeout $timeout -O /dev/null -q -e $proxy_cmd --certificate=$client_certificate $url
+	status=$?
+	end=$(echo $(($(date +%s%N)/1000000)))
+elif [ -n "$fake" ] && [ -n "$client_certificate" ]; then
+	#execute with fake user agent and capture execution time and return status of wget with client certificate
+	start=$(echo $(($(date +%s%N)/1000000)))
+	$wget -t $times --timeout $timeout -O /dev/null -q -e $proxy_cmd --certificate=$client_certificate $url \
+	--header="User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:25.0) Gecko/20100101 Firefox/25.0" \
+	--header="Accept: image/png,image/*;q=0.8,*/*;q=0.5" \
+	--header="Accept-Language: en-us,en;q=0.5" \
+	--header="Accept-Encoding: gzip, deflate" 
 	status=$?
 	end=$(echo $(($(date +%s%N)/1000000)))
 else
 	#execute with fake user agent and capture execution time and return status of wget
 	start=$(echo $(($(date +%s%N)/1000000)))
-	$wget --no-check-certificate -t $times --timeout $timeout -O /dev/null -q -e $proxy_cmd $url \
+	$wget -t $times --timeout $timeout -O /dev/null -q -e $proxy_cmd $url \
 	--header="User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:25.0) Gecko/20100101 Firefox/25.0" \
 	--header="Accept: image/png,image/*;q=0.8,*/*;q=0.5" \
-	--header="Accept-Language: de-DE,de;q=0.5" \
+	--header="Accept-Language: en-us,en;q=0.5" \
 	--header="Accept-Encoding: gzip, deflate" 
 	status=$?
 	end=$(echo $(($(date +%s%N)/1000000)))
