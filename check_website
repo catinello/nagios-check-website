@@ -197,6 +197,34 @@ if [ $status -eq 0 ] ; then
 	getStatus $((end - start))
 	exit $retcode
 else
-	echo "${header} UNKNOWN: N/A - ${url}"
+	case $status in
+	    1)
+	        echo "${header} Generic error code: $status - ${url}"
+	        ;;
+	    2)
+	        echo "${header} Parse error: $status - ${url}"
+	        ;;
+	    3)
+	        echo "${header} File I/O error: $status - ${url}"
+	        ;;
+	    4)
+	        echo "${header} Network failure: $status - ${url}"
+	        ;;
+	    5)
+	        echo "${header} SSL verification failure: $status - ${url}"
+	        ;;
+	    6)
+	        echo "${header} Authentication failure: $status - ${url}"
+	        ;;
+	    7)
+	        echo "${header} Protocol errors: $status - ${url}"
+	        ;;
+	    8)
+	        echo "${header} Server issued an error response: $status - ${url}"
+	        ;;
+	    *)
+		echo "${header} UNKNOWN: $status - ${url}"
+	        ;;
+	esac
 	exit 3
 fi
