@@ -26,6 +26,7 @@ Nagios HTTP/HTTPS check via wget (with/without Proxy).
     	-n TRIES	number of times to try (default: 1)
     	-t TIMEOUT	amount of time to wait in seconds (default: 10)
 		-C CERTIFICATE client certificate stored in file location (PEM AND DER file types allowed)
+    	-b IP		bind ip address used by wget (default: primary system address)
 
 ##Examples:##
 
