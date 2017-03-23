@@ -5,7 +5,7 @@
 # Description: Nagios HTTP/HTTPS check via wget (with/without Proxy)
 
 #variables
-version=0.2
+version=0.3
 wget=$(which wget)
 ssl=""
 fake=""
@@ -23,102 +23,102 @@ bindaddress=""
 #functions
 #set system proxy from environment
 function getProxy() {
-	if [ -z "$1" ]; then
-		echo $http_proxy | awk -F'http://' '{print $2}'
-	else
-		echo $https_proxy | awk -F'http://' '{print $2}'
-	fi
+  if [ -z "$1" ]; then
+    echo $http_proxy | awk -F'http://' '{print $2}'
+  else
+    echo $https_proxy | awk -F'http://' '{print $2}'
+  fi
 }
 
 
 function version() {
-	echo "  Version: ${version} - License: MIT"
+  echo "  Version: ${version} - License: MIT"
 }
 
 #usage info
 function usage() {
-	echo '''Usage: check_website [OPTIONS] {HOSTNAME}
+  echo '''Usage: check_website [OPTIONS] {HOSTNAME}
   {HOSTNAME}
 	host to check (dns/ip)
   [OPTIONS]:
 	-p PORT		port to check (default: 80)
 	-u URL		url path (default: /)
 	-f		use fake agent (windows xp/firefox 25)
-	-s 		use SSL via HTTPS (default: 443)
+	-s		use SSL via HTTPS (default: 443)
 	-P PROXY	proxy access (hostname:port)
 	-w WARNING	warning threshold in milliseconds (default: 500)
 	-c CRITICAL	critical threshold in milliseconds (default: 2000)
 	-n TRIES	number of times to try (default: 1)
 	-t TIMEOUT	amount of time to wait in seconds (default: 10)
-	-C CERTIFICATE client certificate stored in file location (PEM AND DER file types allowed)
+	-C CERTIFICATE	client certificate stored in file location (PEM AND DER file types allowed)
 	-b IP		bind ip address used by wget (default: primary system address)'''
 	version
 }
 
 #check which threshold was reached
 function checkTime() {
-	if [ $1 -gt $critical ]; then
-		echo -n "CRITICAL"
-	elif [ $1 -gt $warning ]; then
-		echo -n "WARNING"
-	else
-		echo -n "OK"
-	fi
+  if [ $1 -gt $critical ]; then
+    echo -n "CRITICAL"
+  elif [ $1 -gt $warning ]; then
+    echo -n "WARNING"
+  else
+    echo -n "OK"
+  fi
 }
 
 #return code value
 function getStatus() {
-	if [ $1 -gt $critical ]; then
-		retcode=2
-	elif [ $1 -gt $warning ]; then
-		retcode=1
-	else
-		retcode=0
-	fi
+  if [ $1 -gt $critical ]; then
+    retcode=2
+  elif [ $1 -gt $warning ]; then
+    retcode=1
+  else
+    retcode=0
+  fi
 }
 
 #main
 #get options
 while getopts "w:c:p:sfu:P:n:t:C:b:" opt; do
-    case $opt in
-	w)
-            warning=$OPTARG
-            ;;
-	c)
-            critical=$OPTARG
-            ;;
-        p)
-            port=$OPTARG
-            ;;
-        s)
-            ssl=1
-            ;;
-	f)
-	    fake=1
-	    ;;
-        u)
-            url=$OPTARG
-            ;;
-        P)
-            proxy=$OPTARG
-            ;;
-        n)
-            times=$OPTARG
-            ;;
-        t)
-            timeout=$OPTARG
-            ;;
-	C)
-	    client_certificate=$OPTARG
-	    ;;
-	b)
-	    bindaddress=$OPTARG
-	    ;;
-        *)
-	    usage
-            exit 3
-            ;;
-    esac
+  case $opt in
+    w)
+      warning=$OPTARG
+      ;;
+    c)
+      critical=$OPTARG
+      ;;
+    p)
+      port=$OPTARG
+      ;;
+    s)
+      ssl=1
+      ;;
+    f)
+      fake=1
+      ;;
+    u)
+      url=$OPTARG
+      ;;
+    P)
+      proxy=$OPTARG
+      ;;
+    n)
+      times=$OPTARG
+      ;;
+    t)
+      timeout=$OPTARG
+      ;;
+    C)
+      client_certificate=$OPTARG
+      ;;
+    b)
+      bindaddress=$OPTARG
+      ;;
+    *)
+      usage
+      exit 3
+      ;;
+  esac
 done
 
 #define host with last parameter
@@ -126,39 +126,39 @@ host=${@: -1}
 
 #hostname is required
 if [ -z "$host" ]; then
-	echo "Error: host is required"
-	usage
-	exit 3
+  echo "Error: host is required"
+  usage
+  exit 3
 fi
 
 #set proxy from environment if available and no proxy option is given
 if [ -z "$proxy" ]; then
-	proxy="$(getProxy ssl)"
+  proxy="$(getProxy ssl)"
 fi
 
 #use ssl or not
 if [ -z "$ssl" ]; then
-	header="HTTP"
-	proxy_cmd="http_proxy=$proxy"
-	url_prefix="http://"
+  header="HTTP"
+  proxy_cmd="http_proxy=$proxy"
+  url_prefix="http://"
 else
-	header="HTTPS"
-	proxy_cmd="https_proxy=$proxy"
-	url_prefix="https://"
+  header="HTTPS"
+  proxy_cmd="https_proxy=$proxy"
+  url_prefix="https://"
 fi
 
 #different port
 if [ -z "$port" ]; then
-    url="${url_prefix}${host}${url}"
+  url="${url_prefix}${host}${url}"
 else
-    url="${url_prefix}${host}:${port}${url}"
+  url="${url_prefix}${host}:${port}${url}"
 fi
 
 #check for wget
 if [ -z "$wget" ]; then
-	echo "Error: wget is missing"
-	usage
-	exit 3
+  echo "Error: wget is missing"
+  usage
+  exit 3
 fi
 
 #check for bindaddress
@@ -169,73 +169,73 @@ fi
 
 #check fake user agent
 if [ -z "$fake" ] && [ -z "$client_certificate" ]; then
-	#execute and capture execution time and return status of wget
-	start=$(echo $(($(date +%s%N)/1000000)))
-	$wget -t $times --timeout $timeout -O /dev/null -q -e $proxy_cmd $bindaddress_cmd $url
-	status=$?
-	end=$(echo $(($(date +%s%N)/1000000)))
+  #execute and capture execution time and return status of wget
+  start=$(echo $(($(date +%s%N)/1000000)))
+  $wget -t $times --timeout $timeout -O /dev/null -q -e $proxy_cmd $bindaddress_cmd $url
+  status=$?
+  end=$(echo $(($(date +%s%N)/1000000)))
 elif [ -z "$fake" ] && [ -n "$client_certificate" ]; then
-	#execute and capture execution time and return status of wget with client certificate
-	start=$(echo $(($(date +%s%N)/1000000)))
-	$wget -t $times --timeout $timeout -O /dev/null -q -e $proxy_cmd $bindaddress_cmd --certificate=$client_certificate $url
-	status=$?
-	end=$(echo $(($(date +%s%N)/1000000)))
+  #execute and capture execution time and return status of wget with client certificate
+  start=$(echo $(($(date +%s%N)/1000000)))
+  $wget -t $times --timeout $timeout -O /dev/null -q -e $proxy_cmd $bindaddress_cmd --certificate=$client_certificate $url
+  status=$?
+  end=$(echo $(($(date +%s%N)/1000000)))
 elif [ -n "$fake" ] && [ -n "$client_certificate" ]; then
-	#execute with fake user agent and capture execution time and return status of wget with client certificate
-	start=$(echo $(($(date +%s%N)/1000000)))
-	$wget -t $times --timeout $timeout -O /dev/null -q -e $proxy_cmd $bindaddress_cmd --certificate=$client_certificate $url \
-	--header="User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:25.0) Gecko/20100101 Firefox/25.0" \
-	--header="Accept: image/png,image/*;q=0.8,*/*;q=0.5" \
-	--header="Accept-Language: en-us,en;q=0.5" \
-	--header="Accept-Encoding: gzip, deflate"
-	status=$?
-	end=$(echo $(($(date +%s%N)/1000000)))
+  #execute with fake user agent and capture execution time and return status of wget with client certificate
+  start=$(echo $(($(date +%s%N)/1000000)))
+  $wget -t $times --timeout $timeout -O /dev/null -q -e $proxy_cmd $bindaddress_cmd --certificate=$client_certificate $url \
+  --header="User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:25.0) Gecko/20100101 Firefox/25.0" \
+  --header="Accept: image/png,image/*;q=0.8,*/*;q=0.5" \
+  --header="Accept-Language: en-us,en;q=0.5" \
+  --header="Accept-Encoding: gzip, deflate"
+  status=$?
+  end=$(echo $(($(date +%s%N)/1000000)))
 else
-	#execute with fake user agent and capture execution time and return status of wget
-	start=$(echo $(($(date +%s%N)/1000000)))
-	$wget -t $times --timeout $timeout -O /dev/null -q -e $proxy_cmd $bindaddress_cmd $url \
-	--header="User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:25.0) Gecko/20100101 Firefox/25.0" \
-	--header="Accept: image/png,image/*;q=0.8,*/*;q=0.5" \
-	--header="Accept-Language: en-us,en;q=0.5" \
-	--header="Accept-Encoding: gzip, deflate"
-	status=$?
-	end=$(echo $(($(date +%s%N)/1000000)))
+  #execute with fake user agent and capture execution time and return status of wget
+  start=$(echo $(($(date +%s%N)/1000000)))
+  $wget -t $times --timeout $timeout -O /dev/null -q -e $proxy_cmd $bindaddress_cmd $url \
+  --header="User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:25.0) Gecko/20100101 Firefox/25.0" \
+  --header="Accept: image/png,image/*;q=0.8,*/*;q=0.5" \
+  --header="Accept-Language: en-us,en;q=0.5" \
+  --header="Accept-Encoding: gzip, deflate"
+  status=$?
+  end=$(echo $(($(date +%s%N)/1000000)))
 fi
 
 #decide output by return code
 if [ $status -eq 0 ] ; then
-	echo "${header} $(checkTime $((end - start))): $((end - start))ms - ${url}|time=$((end - start))ms;${warning};${critical};0;"
-	getStatus $((end - start))
-	exit $retcode
+  echo "${header} $(checkTime $((end - start))): $((end - start))ms - ${url}|time=$((end - start))ms;${warning};${critical};0;"
+  getStatus $((end - start))
+  exit $retcode
 else
-	case $status in
-	    1)
-	        echo "${header} Generic error code: $status - ${url}"
-	        ;;
-	    2)
-	        echo "${header} Parse error: $status - ${url}"
-	        ;;
-	    3)
-	        echo "${header} File I/O error: $status - ${url}"
-	        ;;
-	    4)
-	        echo "${header} Network failure: $status - ${url}"
-	        ;;
-	    5)
-	        echo "${header} SSL verification failure: $status - ${url}"
-	        ;;
-	    6)
-	        echo "${header} Authentication failure: $status - ${url}"
-	        ;;
-	    7)
-	        echo "${header} Protocol errors: $status - ${url}"
-	        ;;
-	    8)
-	        echo "${header} Server issued an error response: $status - ${url}"
-	        ;;
-	    *)
-		echo "${header} UNKNOWN: $status - ${url}"
-	        ;;
-	esac
-	exit 3
+  case $status in
+    1)
+      echo "${header} Generic error code: $status - ${url}"
+      ;;
+    2)
+      echo "${header} Parse error: $status - ${url}"
+      ;;
+    3)
+      echo "${header} File I/O error: $status - ${url}"
+      ;;
+    4)
+      echo "${header} Network failure: $status - ${url}"
+      ;;
+    5)
+      echo "${header} SSL verification failure: $status - ${url}"
+      ;;
+    6)
+      echo "${header} Authentication failure: $status - ${url}"
+      ;;
+    7)
+      echo "${header} Protocol errors: $status - ${url}"
+      ;;
+    8)
+      echo "${header} Server issued an error response: $status - ${url}"
+      ;;
+    *)
+      echo "${header} UNKNOWN: $status - ${url}"
+      ;;
+  esac
+  exit 3
 fi
