@@ -144,7 +144,7 @@ done
 host=${@: -1}
 
 #hostname is required
-if [ -z "$host" ]; then
+if [ -z "$host" ] || [ $# -eq 0 ]; then
   echo "Error: host is required"
   usage
   exit 3
