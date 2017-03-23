@@ -4,6 +4,25 @@
 # License: MIT-License
 # Description: Nagios HTTP/HTTPS check via wget (with/without Proxy)
 
+#startup checks
+if [ -z "$BASH" ]; then
+  echo "Please use BASH."
+  exit 3
+fi
+
+#bash builtin
+if [ ! -e "/usr/bin/which" ]; then
+  echo "/usr/bin/which is missing."
+  exit 3
+fi
+
+#wget
+wget=$(which wget)
+if [ $? -ne 0 ]; then
+  echo "Please install wget."
+  exit 3
+fi
+
 #variables
 version=0.3
 wget=$(which wget)
@@ -152,13 +171,6 @@ if [ -z "$port" ]; then
   url="${url_prefix}${host}${url}"
 else
   url="${url_prefix}${host}:${port}${url}"
-fi
-
-#check for wget
-if [ -z "$wget" ]; then
-  echo "Error: wget is missing"
-  usage
-  exit 3
 fi
 
 #check for bindaddress
