@@ -4,13 +4,13 @@ nagios-check-website
 Nagios HTTP/HTTPS check via wget (with/without Proxy). 
 
 
-##Installation:##
+## Installation:
 
-    # wget https://raw.github.com/catinello/nagios-check-website/master/check_website
-    # chmod +x check_website
-    # mv check_website /#to#/#your#/nagios/libexec/
+    $ wget https://raw.github.com/catinello/nagios-check-website/master/check_website
+    $ chmod +x check_website
+    $ mv check_website /#to#/#your#/nagios/libexec/
 
-##Usage:##
+## Usage:
 
     Usage: check_website [OPTIONS] {HOSTNAME}
       {HOSTNAME}
@@ -25,10 +25,10 @@ Nagios HTTP/HTTPS check via wget (with/without Proxy).
     	-c CRITICAL	critical threshold in milliseconds (default: 2000)
     	-n TRIES	number of times to try (default: 1)
     	-t TIMEOUT	amount of time to wait in seconds (default: 10)
-        -C CERTIFICATE	client certificate stored in file location (PEM AND DER file types allowed)
+    	-C CERTIFICATE	client certificate stored in file location (PEM AND DER file types allowed)
     	-b IP		bind ip address used by wget (default: primary system address)
 
-##Examples:##
+## Examples:
 
 Check with no options.
 
@@ -50,7 +50,7 @@ Check through proxy passing client certificate for authentication.
     ./check_website -P proxy.example.com:3128 -u /ping -s -w 2000 -c 5000 -C /root/certs/client_cert.pem www.example.com
     HTTPS OK: 412ms - https://www.example.com/ping|time=412ms;2000;5000;0;
 
-##Return Values:##
+## Return Values:
 
 Nagios return codes are used.
 
@@ -59,7 +59,7 @@ Nagios return codes are used.
     2 = CRITICAL
     3 = UNKNOWN
 
-##License:##
+## License:
 
 [&copy; Antonino Catinello][HOME] - [MIT-License][MIT]
 
